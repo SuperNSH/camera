@@ -1,0 +1,10 @@
+[package]
+name = "nsh-camera"
+version = "0.0.1"
+edition = "2024"
+license = "MIT"
+description = "Photo capture, video recording and live preview for Native Shell apps."
+repository = "https://github.com/SuperNSH/camera"
+publish = false
+
+[dependencies]
