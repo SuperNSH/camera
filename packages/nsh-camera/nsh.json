@@ -1,0 +1,7 @@
+{
+  "name": "nsh-camera tests",
+  "id": "dev.supernsh.camera.tests",
+  "version": "0.1.0",
+  "build": 1,
+  "capabilities": {}
+}

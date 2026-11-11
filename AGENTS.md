@@ -10,4 +10,5 @@ Hard rules for humans and coding agents in this repo.
 - Dead code is deleted. No speculative abstractions.
 - Every behaviour change needs a test. A test is seen to fail once before it counts.
 - An operation resolves exactly once: success, a coded failure, or a cancel. It never hangs.
+- Keep the Rust and TypeScript versions' semantics the same. A behavior change lands in both, with a test in both.
 - Status claims in README and docs must match what CI runs. A claim with no passing run is unverified.

@@ -1,0 +1,12 @@
+[package]
+name = "nsh-camera"
+description = "Photo capture, video recording and live preview for Native Shell apps"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[lib]
+name = "nsh_camera"
+path = "src/lib.rs"
