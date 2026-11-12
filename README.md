@@ -27,7 +27,7 @@ GitHub Actions compiles and tests everything. `ci.yml` runs on every push to `ma
 
 - **format**: `cargo fmt --all -- --check`.
 - **rust**: `cargo clippy -p nsh-camera --all-targets -- -D warnings`, then `cargo test -p nsh-camera --no-fail-fast`.
-- **typescript**, with NSH v0.4.0: `nsh check`, then `nsh build` (a warning fails the job), then `nsh test`.
+- **typescript**, with NSH v0.5.0: `nsh check`, then `nsh build` (a warning fails the job), then `nsh test`.
 
 Nothing is built or tested on a developer's machine.
 
