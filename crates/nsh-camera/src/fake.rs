@@ -375,6 +375,10 @@ impl FakeRecording {
         self.state.lock().unwrap_or_else(PoisonError::into_inner)
     }
 
+    fn rules(&self) -> MutexGuard<'_, DeviceRules> {
+        self.rules.lock().unwrap_or_else(PoisonError::into_inner)
+    }
+
     /// Takes the recording's single resolution and frees the device for the next one. Called
     /// before the scripts run, so a stop script never fires twice.
     fn resolve_once(&self) -> Result<(), CameraError> {

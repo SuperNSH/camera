@@ -32,7 +32,7 @@ fn cancel_then_stop_reports_already_resolved() {
         .expect("start recording");
     session.cancel().expect("cancel resolves the recording");
 
-    let error = session.stop().err().expect("stop after cancel");
+    let error = session.stop().expect_err("stop after cancel");
     assert_eq!(error.code(), "ERR_CAMERA_ALREADY_RESOLVED");
 }
 
@@ -45,7 +45,7 @@ fn double_cancel_reports_already_resolved() {
         .expect("start recording");
     session.cancel().expect("cancel resolves the recording");
 
-    let error = session.cancel().err().expect("cancel twice");
+    let error = session.cancel().expect_err("cancel twice");
     assert_eq!(error.code(), "ERR_CAMERA_ALREADY_RESOLVED");
 }
 
@@ -58,7 +58,7 @@ fn stop_then_cancel_reports_already_resolved() {
         .expect("start recording");
     session.stop().expect("stop resolves the recording");
 
-    let error = session.cancel().err().expect("cancel after stop");
+    let error = session.cancel().expect_err("cancel after stop");
     assert_eq!(error.code(), "ERR_CAMERA_ALREADY_RESOLVED");
 }
 
@@ -71,13 +71,12 @@ fn interrupted_stop_then_cancel_reports_already_resolved() {
         .expect("start recording");
     backend.interrupt_recording();
 
-    let error = session.stop().err().expect("interrupted stop");
+    let error = session.stop().expect_err("interrupted stop");
     assert_eq!(error.code(), "ERR_CAMERA_INTERRUPTED");
 
     let error = session
         .cancel()
-        .err()
-        .expect("cancel after the interruption resolved the session");
+        .expect_err("cancel after the interruption resolved the session");
     assert_eq!(error.code(), "ERR_CAMERA_ALREADY_RESOLVED");
 }
 
@@ -89,8 +88,7 @@ fn capture_after_device_close_reports_already_resolved() {
 
     let error = device
         .capture_photo(&PhotoOptions::default())
-        .err()
-        .expect("capture after close");
+        .expect_err("capture after close");
     assert_eq!(error.code(), "ERR_CAMERA_ALREADY_RESOLVED");
 }
 
@@ -100,7 +98,7 @@ fn device_close_twice_reports_already_resolved() {
     let device = open_back(&camera);
     device.close().expect("close resolves once");
 
-    let error = device.close().err().expect("close twice");
+    let error = device.close().expect_err("close twice");
     assert_eq!(error.code(), "ERR_CAMERA_ALREADY_RESOLVED");
 }
 
@@ -111,6 +109,6 @@ fn next_frame_after_preview_close_reports_already_resolved() {
     let preview = device.start_preview().expect("start preview");
     preview.close().expect("close resolves once");
 
-    let error = preview.next_frame().err().expect("frame after close");
+    let error = preview.next_frame().expect_err("frame after close");
     assert_eq!(error.code(), "ERR_CAMERA_ALREADY_RESOLVED");
 }

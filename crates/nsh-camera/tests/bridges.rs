@@ -7,20 +7,17 @@ use nsh_camera::{
 fn assert_unwired_reports_not_available(camera: &Camera) {
     let error = camera
         .permission()
-        .err()
-        .expect("permission through an unwired link");
+        .expect_err("permission through an unwired link");
     assert_eq!(error.code(), "ERR_CAMERA_NOT_AVAILABLE");
 
     let error = camera
         .request_permission()
-        .err()
-        .expect("permission request through an unwired link");
+        .expect_err("permission request through an unwired link");
     assert_eq!(error.code(), "ERR_CAMERA_NOT_AVAILABLE");
 
     let error = camera
         .devices()
-        .err()
-        .expect("device list through an unwired link");
+        .expect_err("device list through an unwired link");
     assert_eq!(error.code(), "ERR_CAMERA_NOT_AVAILABLE");
 
     let error = camera
@@ -65,14 +62,12 @@ fn unsupported_default_backend_reports_not_available() {
 
     let error = camera
         .request_permission()
-        .err()
-        .expect("permission request through the default backend");
+        .expect_err("permission request through the default backend");
     assert_eq!(error.code(), "ERR_CAMERA_NOT_AVAILABLE");
 
     let error = camera
         .devices()
-        .err()
-        .expect("device list through the default backend");
+        .expect_err("device list through the default backend");
     assert_eq!(error.code(), "ERR_CAMERA_NOT_AVAILABLE");
 
     let error = camera

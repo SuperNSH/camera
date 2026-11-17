@@ -294,7 +294,7 @@ impl AvFoundationLink for ScriptedLink {
         self.lock()
             .capture_photo
             .clone()
-            .unwrap_or_else(|| Err(LinkFailure::Unavailable))
+            .unwrap_or(Err(LinkFailure::Unavailable))
     }
 
     fn start_preview(&self) -> Result<(), LinkFailure> {
@@ -305,7 +305,7 @@ impl AvFoundationLink for ScriptedLink {
         self.lock()
             .next_frame
             .clone()
-            .unwrap_or_else(|| Err(LinkFailure::Unavailable))
+            .unwrap_or(Err(LinkFailure::Unavailable))
     }
 
     fn start_recording(&self, _options: &RecordingOptions) -> Result<(), LinkFailure> {
@@ -320,7 +320,7 @@ impl AvFoundationLink for ScriptedLink {
         self.lock()
             .stop_recording
             .clone()
-            .unwrap_or_else(|| Err(LinkFailure::Unavailable))
+            .unwrap_or(Err(LinkFailure::Unavailable))
     }
 
     fn cancel_recording(&self) -> Result<(), LinkFailure> {
@@ -562,11 +562,11 @@ mod tests {
     #[test]
     fn null_link_resolves_not_available_everywhere() {
         let camera = Camera::with_backend(Arc::new(AppleBackend::new()));
-        let probe = camera.permission().err().expect("probe fails");
+        let probe = camera.permission().expect_err("probe fails");
         assert_eq!(probe.kind(), ErrorKind::NotAvailable);
-        let request = camera.request_permission().err().expect("request fails");
+        let request = camera.request_permission().expect_err("request fails");
         assert_eq!(request.kind(), ErrorKind::NotAvailable);
-        let devices = camera.devices().err().expect("list fails");
+        let devices = camera.devices().expect_err("list fails");
         assert_eq!(devices.kind(), ErrorKind::NotAvailable);
         let open = camera.open(&back_camera_id()).err().expect("open fails");
         assert_eq!(open.kind(), ErrorKind::NotAvailable);
@@ -618,7 +618,7 @@ mod tests {
             let answer = camera.request_permission();
             match expected {
                 Ok(state) => assert_eq!(answer.expect("granted"), state),
-                Err(kind) => assert_eq!(answer.err().expect("denied").kind(), kind),
+                Err(kind) => assert_eq!(answer.expect_err("denied").kind(), kind),
             }
         }
     }
@@ -664,10 +664,10 @@ mod tests {
         let link = Arc::new(ScriptedLink::new());
         link.fail_device_list(LinkFailure::Busy);
         let camera = camera_over(&link);
-        let busy = camera.devices().err().expect("busy fails");
+        let busy = camera.devices().expect_err("busy fails");
         assert_eq!(busy.kind(), ErrorKind::DeviceBusy);
         link.fail_device_list(LinkFailure::Missing);
-        let missing = camera.devices().err().expect("missing fails");
+        let missing = camera.devices().expect_err("missing fails");
         assert_eq!(missing.kind(), ErrorKind::NotAvailable);
         link.set_device_list(Vec::new());
         let devices = camera.devices().expect("empty list resolves");
@@ -697,10 +697,7 @@ mod tests {
             resolution: None,
             mime: None,
         };
-        let err = device
-            .capture_photo(&options)
-            .err()
-            .expect("format refused");
+        let err = device.capture_photo(&options).expect_err("format refused");
         assert_eq!(err.kind(), ErrorKind::FormatUnsupported);
     }
 
@@ -751,7 +748,7 @@ mod tests {
         let session = AppleRecording {
             link: Arc::clone(&link),
         };
-        let err = session.stop().err().expect("interrupted");
+        let err = session.stop().expect_err("interrupted");
         assert_eq!(err.kind(), ErrorKind::Interrupted);
     }
 
@@ -816,7 +813,7 @@ mod tests {
         let frame = preview.next_frame().expect("frame resolves");
         assert_eq!(frame.data, vec![9]);
         link.fail_next_frame(LinkFailure::Missing);
-        let err = preview.next_frame().err().expect("frames run out");
+        let err = preview.next_frame().expect_err("frames run out");
         assert_eq!(err.kind(), ErrorKind::NotAvailable);
     }
 
@@ -838,15 +835,14 @@ mod tests {
         };
         let err = device
             .capture_photo(&empty_mime)
-            .err()
-            .expect("empty mime refused");
+            .expect_err("empty mime refused");
         assert_eq!(err.kind(), ErrorKind::InvalidArgument);
         // Had the invalid capture reached the link, the scripted Format failure would show.
         let valid = PhotoOptions {
             resolution: None,
             mime: Some("image/jpeg"),
         };
-        let err = device.capture_photo(&valid).err().expect("format refused");
+        let err = device.capture_photo(&valid).expect_err("format refused");
         assert_eq!(err.kind(), ErrorKind::FormatUnsupported);
     }
 }

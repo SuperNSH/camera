@@ -270,6 +270,6 @@ fn queued_frames_pop_fifo_then_report_not_available() {
     assert_eq!(second.data, vec![2]);
     assert_eq!(second.orientation, Orientation::LandscapeLeft);
 
-    let error = preview.next_frame().err().expect("empty frame queue");
+    let error = preview.next_frame().expect_err("empty frame queue");
     assert_eq!(error.code(), "ERR_CAMERA_NOT_AVAILABLE");
 }

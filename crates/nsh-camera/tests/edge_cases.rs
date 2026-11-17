@@ -29,10 +29,7 @@ fn permission_denied_on_ios_asks_once_then_requires_settings() {
     let camera = Camera::with_backend(backend.clone());
     backend.deny_permission_once();
 
-    let error = camera
-        .request_permission()
-        .err()
-        .expect("first ask declines");
+    let error = camera.request_permission().expect_err("first ask declines");
     assert_eq!(error.code(), "ERR_CAMERA_PERMISSION_DENIED");
 
     let state = camera.permission().expect("state after the decline");
@@ -40,8 +37,7 @@ fn permission_denied_on_ios_asks_once_then_requires_settings() {
 
     let error = camera
         .request_permission()
-        .err()
-        .expect("second ask requires settings");
+        .expect_err("second ask requires settings");
     assert_eq!(error.code(), "ERR_CAMERA_PERMISSION_PERMANENTLY_DENIED");
 }
 
@@ -53,8 +49,7 @@ fn restricted_permission_maps_to_permission_restricted() {
 
     let error = camera
         .request_permission()
-        .err()
-        .expect("restricted ask never prompts");
+        .expect_err("restricted ask never prompts");
     assert_eq!(error.code(), "ERR_CAMERA_PERMISSION_RESTRICTED");
 
     let state = camera
@@ -154,13 +149,12 @@ fn backgrounded_interruption_resolves_recording_as_interrupted() {
         .expect("start recording");
     backend.interrupt_recording();
 
-    let error = session.stop().err().expect("backgrounded interruption");
+    let error = session.stop().expect_err("backgrounded interruption");
     assert_eq!(error.code(), "ERR_CAMERA_INTERRUPTED");
 
     let error = session
         .cancel()
-        .err()
-        .expect("the interruption already resolved the session");
+        .expect_err("the interruption already resolved the session");
     assert_eq!(error.code(), "ERR_CAMERA_ALREADY_RESOLVED");
 }
 
@@ -173,7 +167,7 @@ fn caller_cancel_resolves_recording_as_cancelled() {
         .expect("start recording");
     session.cancel().expect("cancel resolves the recording");
 
-    let error = session.stop().err().expect("stop after cancel");
+    let error = session.stop().expect_err("stop after cancel");
     assert_eq!(error.code(), "ERR_CAMERA_ALREADY_RESOLVED");
 }
 
@@ -207,8 +201,7 @@ fn unsupported_format_reports_format_unsupported() {
     };
     let error = device
         .capture_photo(&beyond_the_device)
-        .err()
-        .expect("device cannot deliver the requested format");
+        .expect_err("device cannot deliver the requested format");
     assert_eq!(error.code(), "ERR_CAMERA_FORMAT_UNSUPPORTED");
 }
 
@@ -221,8 +214,7 @@ fn closed_preview_has_no_frames() {
 
     let error = preview
         .next_frame()
-        .err()
-        .expect("closed preview has no frames");
+        .expect_err("closed preview has no frames");
     assert_eq!(error.code(), "ERR_CAMERA_ALREADY_RESOLVED");
 }
 

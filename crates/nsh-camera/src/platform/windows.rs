@@ -563,7 +563,7 @@ mod tests {
     use super::{
         LinkFailure, LinkPermission, ScriptedLink, WindowsBackend, WindowsPreview, WindowsRecording,
     };
-    use crate::backend::{Backend, DeviceBackend, PreviewBackend, RecordingBackend};
+    use crate::backend::{Backend, PreviewBackend, RecordingBackend};
     use crate::camera::Camera;
     use crate::error::ErrorKind;
     use crate::options::{
@@ -583,17 +583,16 @@ mod tests {
     fn null_link_resolves_not_available_through_camera() {
         let camera = Camera::with_backend(Arc::new(WindowsBackend::new()));
 
-        let err = camera.permission().err().expect("permission unavailable");
+        let err = camera.permission().expect_err("permission unavailable");
         assert_eq!(err.kind(), ErrorKind::NotAvailable);
         assert_eq!(err.code(), "ERR_CAMERA_NOT_AVAILABLE");
 
         let err = camera
             .request_permission()
-            .err()
-            .expect("request unavailable");
+            .expect_err("request unavailable");
         assert_eq!(err.kind(), ErrorKind::NotAvailable);
 
-        let err = camera.devices().err().expect("devices unavailable");
+        let err = camera.devices().expect_err("devices unavailable");
         assert_eq!(err.kind(), ErrorKind::NotAvailable);
 
         let err = camera.open(&camera_id()).err().expect("open unavailable");
@@ -630,18 +629,17 @@ mod tests {
         );
 
         link.set_request_permission(LinkPermission::DeclinedOnce);
-        let err = backend.request_permission().err().expect("declined once");
+        let err = backend.request_permission().expect_err("declined once");
         assert_eq!(err.kind(), ErrorKind::PermissionDenied);
 
         link.set_request_permission(LinkPermission::DeclinedPermanently);
         let err = backend
             .request_permission()
-            .err()
-            .expect("declined permanently");
+            .expect_err("declined permanently");
         assert_eq!(err.kind(), ErrorKind::PermissionPermanentlyDenied);
 
         link.set_request_permission(LinkPermission::Restricted);
-        let err = backend.request_permission().err().expect("restricted");
+        let err = backend.request_permission().expect_err("restricted");
         assert_eq!(err.kind(), ErrorKind::PermissionRestricted);
     }
 
@@ -695,11 +693,11 @@ mod tests {
         assert_eq!(backend.devices().expect("list"), vec![webcam]);
 
         link.fail_device_list(LinkFailure::Busy);
-        let err = backend.devices().err().expect("busy");
+        let err = backend.devices().expect_err("busy");
         assert_eq!(err.kind(), ErrorKind::DeviceBusy);
 
         link.fail_device_list(LinkFailure::Missing);
-        let err = backend.devices().err().expect("missing");
+        let err = backend.devices().expect_err("missing");
         assert_eq!(err.kind(), ErrorKind::NotAvailable);
     }
 
@@ -716,8 +714,7 @@ mod tests {
                 resolution: None,
                 mime: None,
             })
-            .err()
-            .expect("format");
+            .expect_err("format");
         assert_eq!(err.kind(), ErrorKind::FormatUnsupported);
 
         // A scripted photo passes through unchanged.
@@ -740,7 +737,7 @@ mod tests {
         assert_eq!(photo.mime, "image/jpeg");
 
         // close_device has no script here, so it resolves the unwired answer.
-        let err = device.close().err().expect("close unwired");
+        let err = device.close().expect_err("close unwired");
         assert_eq!(err.kind(), ErrorKind::NotAvailable);
     }
 
@@ -773,7 +770,7 @@ mod tests {
         let session = WindowsRecording {
             link: Arc::clone(&interrupted),
         };
-        let err = session.stop().err().expect("interrupted");
+        let err = session.stop().expect_err("interrupted");
         assert_eq!(err.kind(), ErrorKind::Interrupted);
 
         let finished = scripted();
@@ -799,7 +796,7 @@ mod tests {
         let session = WindowsRecording {
             link: Arc::clone(&unwired),
         };
-        let err = session.cancel().err().expect("cancel unwired");
+        let err = session.cancel().expect_err("cancel unwired");
         assert_eq!(err.kind(), ErrorKind::NotAvailable);
     }
 
@@ -831,7 +828,7 @@ mod tests {
         assert_eq!(preview.next_frame().expect("frame").data, vec![9]);
 
         link.fail_next_frame(LinkFailure::Missing);
-        let err = preview.next_frame().err().expect("frame missing");
+        let err = preview.next_frame().expect_err("frame missing");
         assert_eq!(err.kind(), ErrorKind::NotAvailable);
 
         preview.close().expect("preview close");
@@ -860,8 +857,7 @@ mod tests {
                 resolution: None,
                 mime: Some(""),
             })
-            .err()
-            .expect("empty mime");
+            .expect_err("empty mime");
         assert_eq!(err.kind(), ErrorKind::InvalidArgument);
     }
 }
