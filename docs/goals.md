@@ -71,6 +71,8 @@ Every reference edge case, mapped to its named test on both sides. The names are
 | The device cannot deliver the requested format | `unsupported_format_reports_format_unsupported` | `unsupported_format_reports_format_unsupported` |
 | A closed preview has no frames | `closed_preview_has_no_frames` | `closed_preview_has_no_frames` |
 | An empty id, an empty mime or a zero fps | `invalid_arguments_report_invalid_argument` | `invalid_arguments_report_invalid_argument` |
+| A recording the device cannot format | `unsupported_recording_format_reports_format_unsupported` | `unsupported_recording_format_reports_format_unsupported` |
+| `audio` is off unless asked for | `recording_audio_defaults_to_false` | `recording_audio_defaults_to_false` |
 
 ## Acceptance criteria
 
@@ -78,11 +80,11 @@ These are the finish conditions, not a status report; `docs/parity.md` tracks wh
 
 | Criterion | Proven by |
 |---|---|
-| One stable code per failure mode, the same 14 on both sides | `crates/nsh-camera/tests/error_codes.rs`; `packages/nsh-camera/tests/errors.test.tsx` |
+| One stable code and one locked sentence per failure mode, the same 14 on both sides | `crates/nsh-camera/tests/error_codes.rs` (`every_kind_carries_its_locked_sentence`); `packages/nsh-camera/tests/errors.test.tsx` |
 | Every call resolves exactly once, and later calls on a resolved operation get `ERR_CAMERA_ALREADY_RESOLVED` | `crates/nsh-camera/tests/exactly_once.rs`; `packages/nsh-camera/tests/device.test.tsx` |
 | The reference edge cases behave as mapped above | the edge-case table |
 | Scripted fake and memory backends drive the whole surface without a device | `crates/nsh-camera/tests/fake_backend.rs`; `packages/nsh-camera/tests/camera.test.tsx` and `packages/nsh-camera/tests/device.test.tsx` |
-| Every unwired bridge resolves `ERR_CAMERA_NOT_AVAILABLE` | `crates/nsh-camera/tests/bridges.rs`: `apple_bridge_reports_not_available`, `android_bridge_reports_not_available`, `windows_bridge_reports_not_available`, `linux_bridge_reports_not_available` |
+| Every unwired bridge resolves `ERR_CAMERA_NOT_AVAILABLE` | `crates/nsh-camera/tests/bridges.rs`: `apple_bridge_reports_not_available`, `android_bridge_reports_not_available`, `windows_bridge_reports_not_available`, `linux_bridge_reports_not_available`, `unsupported_default_backend_reports_not_available` |
 | Rust gates and the TypeScript typecheck, build and test pass | `.github/workflows/ci.yml`, which never runs on a developer machine |
 
 ## Non-goals

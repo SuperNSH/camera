@@ -2,7 +2,7 @@
 
 Each row names one public API of Flutter's camera plugin (the names come from `.refs/flutter-packages/packages/camera`, read on 2026-11-09) or of react-native-vision-camera (the names come from `.refs/react-native-vision-camera`, package `packages/react-native-vision-camera`, read on 2026-11-09), what nsh-camera does for it, and the test that covers it. `expo-camera` is reference-only per [brief.md](brief.md) and is not enumerated.
 
-No row counts as verified until GitHub Actions runs a test for it (AGENTS.md). The statuses below describe the written behavior; this table was written before this work's first CI run.
+No row counts as verified until GitHub Actions runs a test for it (AGENTS.md). Every test named below passed in [CI run 44381693528](https://github.com/SuperNSH/camera/actions/runs/44381693528) (jobs `format`, `rust`, `typescript`), against the fake and memory backends and the scripted links. Nothing here has run against a real camera: a row marked Done is Done at the seam, and the platform rows stay Platform only until a native link is wired.
 
 Status words:
 
