@@ -115,6 +115,9 @@ test("invalid_arguments_report_invalid_argument", async () => {
   await expect(device.startRecording({ fps: 0 })).rejects.toMatchObject({
     code: "ERR_CAMERA_INVALID_ARGUMENT",
   });
+  await expect(device.capturePhoto({ mime: "" })).rejects.toMatchObject({
+    code: "ERR_CAMERA_INVALID_ARGUMENT",
+  });
   await device.close();
   // Arguments are checked before the closed state, same as Rust.
   await expect(device.capturePhoto({ mime: "" })).rejects.toMatchObject({
@@ -123,4 +126,23 @@ test("invalid_arguments_report_invalid_argument", async () => {
   await expect(device.startRecording({ fps: 0 })).rejects.toMatchObject({
     code: "ERR_CAMERA_INVALID_ARGUMENT",
   });
+});
+
+test("unsupported_recording_format_reports_format_unsupported", async () => {
+  const { backend, device } = await openCamera();
+  backend.failRecordingWith("ERR_CAMERA_FORMAT_UNSUPPORTED");
+  await expect(device.startRecording({ fps: 240 })).rejects.toMatchObject({
+    code: "ERR_CAMERA_FORMAT_UNSUPPORTED",
+  });
+  // The refused start left no recording, so the device is free again.
+  const session = await device.startRecording();
+  await session.cancel();
+});
+
+test("recording_audio_defaults_to_false", async () => {
+  const { backend, device } = await openCamera();
+  backend.denyMicrophone();
+  // No audio asked, so the declined microphone is never consulted.
+  const session = await device.startRecording({});
+  await session.stop();
 });

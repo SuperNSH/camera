@@ -3,7 +3,7 @@ import { Camera, memoryBackend } from "../src";
 
 test("a camera with no backend has no capture service to ask", async () => {
   const camera = new Camera();
-  expect(await camera.permission()).toBe("not-determined");
+  await expect(camera.permission()).rejects.toMatchObject({ code: "ERR_CAMERA_NOT_AVAILABLE" });
   await expect(camera.requestPermission()).rejects.toMatchObject({ code: "ERR_CAMERA_NOT_AVAILABLE" });
   await expect(camera.devices()).rejects.toMatchObject({ code: "ERR_CAMERA_NOT_AVAILABLE" });
   await expect(camera.open("any")).rejects.toMatchObject({ code: "ERR_CAMERA_NOT_AVAILABLE" });

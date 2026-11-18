@@ -1,8 +1,6 @@
 use std::sync::Arc;
 
-use nsh_camera::{
-    AndroidBackend, AppleBackend, Camera, CameraId, LinuxBackend, PermissionState, WindowsBackend,
-};
+use nsh_camera::{AndroidBackend, AppleBackend, Camera, CameraId, LinuxBackend, WindowsBackend};
 
 fn assert_unwired_reports_not_available(camera: &Camera) {
     let error = camera
@@ -55,10 +53,10 @@ fn linux_bridge_reports_not_available() {
 fn unsupported_default_backend_reports_not_available() {
     let camera = Camera::new();
 
-    let state = camera
+    let error = camera
         .permission()
-        .expect("the default backend never asked for permission");
-    assert_eq!(state, PermissionState::NotDetermined);
+        .expect_err("permission through the default backend");
+    assert_eq!(error.code(), "ERR_CAMERA_NOT_AVAILABLE");
 
     let error = camera
         .request_permission()

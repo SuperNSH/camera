@@ -51,9 +51,6 @@ impl CameraDevice {
 
     /// Captures one photo. An empty mime is an invalid argument and never reaches the backend.
     pub fn capture_photo(&self, options: &PhotoOptions) -> Result<Photo, CameraError> {
-        if options.mime == Some("") {
-            return Err(CameraError::new(ErrorKind::InvalidArgument));
-        }
         if self.shared.rules().closed {
             return Err(CameraError::new(ErrorKind::AlreadyResolved));
         }

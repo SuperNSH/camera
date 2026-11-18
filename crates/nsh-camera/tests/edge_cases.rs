@@ -249,10 +249,49 @@ fn invalid_arguments_report_invalid_argument() {
         .expect("zero fps refused");
     assert_eq!(error.code(), "ERR_CAMERA_INVALID_ARGUMENT");
 
+    let empty_photo_mime = PhotoOptions {
+        mime: Some(""),
+        ..PhotoOptions::default()
+    };
+    let error = device
+        .capture_photo(&empty_photo_mime)
+        .expect_err("empty photo mime refused");
+    assert_eq!(error.code(), "ERR_CAMERA_INVALID_ARGUMENT");
+
     device.close().expect("close the scripted device");
+    let error = device
+        .capture_photo(&empty_photo_mime)
+        .expect_err("photo arguments are checked before the closed state");
+    assert_eq!(error.code(), "ERR_CAMERA_INVALID_ARGUMENT");
     let error = device
         .start_recording(&empty_mime)
         .err()
         .expect("arguments are checked before the closed state");
     assert_eq!(error.code(), "ERR_CAMERA_INVALID_ARGUMENT");
+}
+
+#[test]
+fn unsupported_recording_format_reports_format_unsupported() {
+    let (camera, backend) = scripted_camera();
+    let device = open_back(&camera);
+    backend.fail_recording_with(CameraError::new(ErrorKind::FormatUnsupported));
+
+    let error = device
+        .start_recording(&RecordingOptions {
+            fps: Some(240),
+            ..RecordingOptions::default()
+        })
+        .err()
+        .expect("device cannot deliver the requested frame rate");
+    assert_eq!(error.code(), "ERR_CAMERA_FORMAT_UNSUPPORTED");
+
+    // The refused start left no recording, so the device is free again.
+    device
+        .start_recording(&RecordingOptions::default())
+        .expect("starts at the default format");
+}
+
+#[test]
+fn recording_audio_defaults_to_false() {
+    assert!(!RecordingOptions::default().audio);
 }
