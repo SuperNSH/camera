@@ -58,7 +58,7 @@ The running session resolves at the first of `stop()` or `cancel()`. A later `st
 
 Nothing external is pinned this release. The nokhwa, CameraX and AVFoundation wrappers stay unpinned until checked on the registry, as `docs/brief.md` requires; versions and licences are unverified until then.
 
-The NSH relationship is settled, per `.refs/nsh`: TSX apps import `"nsh"` (`mount`, `signal`, `Text`, `View`) and `"nsh/test"` (`test`, `expect`), and this package follows biometrics' consumption pattern. CI installs NSH with the same installer biometrics uses, at 0.5.1 since 2026-11-17 (0.5.0 from 2026-11-11, 0.4.0 before).
+The NSH relationship is settled, per `.refs/nsh`: TSX apps import `"nsh"` (`mount`, `signal`, `Text`, `View`) and `"nsh/test"` (`test`, `expect`), and this package follows biometrics' consumption pattern. CI installs NSH with the same installer biometrics uses, at 0.6.0 since 2026-11-18 (0.5.1 from 2026-11-17, 0.5.0 from 2026-11-11, 0.4.0 before).
 
 ## The STEP 0 reference set
 
