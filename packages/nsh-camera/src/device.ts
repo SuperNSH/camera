@@ -29,6 +29,9 @@ export class CameraDevice {
    * device is touched; a format the device cannot deliver rejects with its own code.
    */
   capturePhoto(options: PhotoOptions = {}): Promise<Photo> {
+    if (options.mime === "") {
+      return Promise.reject(cameraError("ERR_CAMERA_INVALID_ARGUMENT"));
+    }
     if (this.closed) return Promise.reject(cameraError("ERR_CAMERA_ALREADY_RESOLVED"));
     return settle(() => this.backend.capturePhoto(options));
   }

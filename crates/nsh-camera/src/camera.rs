@@ -21,7 +21,7 @@ pub struct Camera {
 
 impl Camera {
     /// The platform default: an unsupported backend, because no native link is wired this
-    /// release. `permission` reports [`PermissionState::NotDetermined`]; every ask errs.
+    /// release. Every call, `permission` included, resolves `ERR_CAMERA_NOT_AVAILABLE`.
     pub fn new() -> Self {
         Self::with_backend(Arc::new(UnsupportedBackend))
     }

@@ -128,7 +128,7 @@ impl ErrorKind {
             ErrorKind::OrientationUnsupported => {
                 "This platform cannot honor the requested recording orientation."
             }
-            ErrorKind::Cancelled => "The recording was cancelled.",
+            ErrorKind::Cancelled => "The recording was cancelled before it finished.",
             ErrorKind::Backend => "The platform's camera service failed.",
             ErrorKind::InvalidArgument => "An argument is empty or not allowed on this platform.",
             ErrorKind::AlreadyResolved => {

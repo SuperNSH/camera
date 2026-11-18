@@ -6,14 +6,14 @@ use crate::{
     options::{CameraId, CameraInfo, PermissionState},
 };
 
-/// No capture service exists on this platform yet: every ask resolves not-available, and the
-/// permission probe reports not-determined because nothing was ever asked.
+/// No capture service exists on this platform yet: every call, the permission probe included,
+/// resolves not-available.
 #[derive(Debug, Default)]
 pub struct UnsupportedBackend;
 
 impl Backend for UnsupportedBackend {
     fn permission(&self) -> Result<PermissionState, CameraError> {
-        Ok(PermissionState::NotDetermined)
+        Err(CameraError::new(ErrorKind::NotAvailable))
     }
 
     fn request_permission(&self) -> Result<PermissionState, CameraError> {

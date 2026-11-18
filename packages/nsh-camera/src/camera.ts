@@ -40,13 +40,13 @@ export class Camera {
 }
 
 /**
- * No native camera link ships this release; every ask names it, and the permission probe reports
- * not-determined because nothing was ever asked.
+ * No native camera link ships this release; every call, the permission probe included, rejects
+ * with `ERR_CAMERA_NOT_AVAILABLE`.
  */
 function unwiredBackend(): CameraBackend {
   const missing = <T>(): Promise<T> => Promise.reject(cameraError("ERR_CAMERA_NOT_AVAILABLE"));
   return {
-    permission: async (): Promise<PermissionState> => "not-determined",
+    permission: missing,
     requestPermission: missing,
     devices: missing,
     openDevice: missing,
