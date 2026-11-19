@@ -10,3 +10,6 @@ authors.workspace = true
 [lib]
 name = "nsh_camera"
 path = "src/lib.rs"
+
+[dependencies]
+nsh-core = "0.6.0"

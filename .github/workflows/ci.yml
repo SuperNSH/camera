@@ -32,8 +32,8 @@ jobs:
       - run: cargo fmt --all -- --check
 
   rust:
-    # The crate is std-only with no platform dependencies, so ubuntu compiles the same code
-    # every target would; no OS matrix and no cross-check job this release.
+    # The crate's only dependency is nsh-core and it has no platform link, so ubuntu compiles the
+    # same code every target would; no OS matrix and no cross-check job this release.
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:

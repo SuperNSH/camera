@@ -45,3 +45,16 @@ test("asCameraError maps an unknown throw to a backend failure", () => {
   expect(mapped.code).toBe("ERR_CAMERA_BACKEND");
   expect(asCameraError("not an error").code).toBe("ERR_CAMERA_BACKEND");
 });
+
+test("asCameraError keeps the code of a native rejection", () => {
+  expect(asCameraError({ code: "ERR_CAMERA_DEVICE_BUSY", message: "busy" }).code).toBe("ERR_CAMERA_DEVICE_BUSY");
+  expect(asCameraError({ code: "ERR_SOMETHING_ELSE", message: "x" }).code).toBe("ERR_CAMERA_BACKEND");
+});
+
+test("asCameraError reads the code a host puts first in its message", () => {
+  const hosted = { code: "ERR_NSH_HOST_ERROR", message: "ERR_CAMERA_PERMISSION_DENIED: declined" };
+  expect(asCameraError(hosted).code).toBe("ERR_CAMERA_PERMISSION_DENIED");
+  expect(asCameraError({ code: "ERR_NSH_HOST_ERROR", message: "ERR_CAMERA_MADE_UP: x" }).code).toBe(
+    "ERR_CAMERA_BACKEND",
+  );
+});

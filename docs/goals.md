@@ -104,10 +104,10 @@ These are the finish conditions, not a status report; `docs/parity.md` tracks wh
 - File-path output: no filesystem in the seam keeps it testable on every runner (see [decisions.md](decisions.md)).
 - Reactive hooks and signals: the surface is commands and one-shot reads; no camera state streams to a view.
 - The `<Camera>` preview widget: a preview view needs the NSH view layer in hand; this release ships the API.
-- Frame processors and worklet threading: frames would have to cross the native boundary, and the native binding is pinned, not wired (see [decisions.md](decisions.md)).
+- Frame processors and worklet threading: frames cross the native boundary as polled `Uint8Array`s now (see [decisions.md](decisions.md)), but no platform delivers any, and a worklet thread is an NSH runtime feature this crate does not add.
 - Barcode, depth, location, skia and resizer analyzers: they run on frame data, which stays opaque this release.
 - Web platform: `docs/brief.md` names no web camera option.
-- The native TSX binding: pinned but not wired (see [decisions.md](decisions.md)).
+- The native platform backends: AVFoundation, CameraX and nokhwa are not written, and none could be run without a camera. The TSX binding to the crate is wired (see [decisions.md](decisions.md)).
 
 ## References
 

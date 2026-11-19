@@ -8,17 +8,17 @@ The repo was a single root crate — `Cargo.toml` and `src/lib.rs`, nothing else
 
 Consequence: two test suites, one per side, and CI gates both. Every rule in `docs/goals.md` is proven twice, once in Rust and once in TypeScript.
 
-## The crate is std-only this release
+## The crate depends on nsh-core only
 
-No dependencies: no `nsh-core`, no `nokhwa`, no `objc2`, no JNI. `docs/brief.md`'s rule is that a version is checked on the registry before it is pinned, and a native backend built on unverified dependencies would be unwritable.
+One dependency, `nsh-core = "0.6.0"`, for the TSX binding below: no `nokhwa`, no `objc2`, no JNI. `docs/brief.md`'s rule is that a version is checked on the registry before it is pinned, and a native backend built on unverified dependencies would be unwritable.
 
 Consequence: `crates/nsh-camera/src/platform/` holds link-layer seams, one per platform, and every unwired link resolves `ERR_CAMERA_NOT_AVAILABLE` everywhere. The whole contract — exactly-once, the 14 codes, the edge cases — ships testable through the fake backend, and a native backend later drops in behind its seam without changing a rule.
 
-## The native TSX binding is pinned, not wired
+## The native TSX binding is wired, over an unwired crate
 
-When `nsh-core` lands, `native.rs` exposes `#[native_module("nsh-camera/native")]` with a `NativeCamera` `#[class]` following biometrics' plain-value rule: plain arguments, plain results, rejections that carry a `code`. The package's exports then gain `"./rust"` returning `rustBackend()`, and `nsh.json` gains the `"rust"` field, the way biometrics consumes its crate.
+`native.rs` exposes `#[native_module("nsh-camera/native")]` with a `NativeCamera` `#[class]`, on the plain-value rule of the qr-code crate: plain arguments, plain results, rejections that carry a `code`. The earlier note deferred it because devices, previews and recordings are handles and frames are bytes; with `nsh-core` 0.6.0 in hand the design is: the class keeps open devices, previews and recordings in a handle table, TSX holds the numbers, and bytes cross as `Vec<u8>` / `Uint8Array`. A closed handle stays in the table, so a second call is `ERR_CAMERA_ALREADY_RESOLVED` from the device and not an unknown handle. `packages/nsh-camera/src/rust.ts` is `rustBackend()` over it, `nsh.json` lists the crate under `"rust"`, and `asCameraError` reads the `code` a native rejection carries. Because every platform link is still unwired, the crate answers `ERR_CAMERA_NOT_AVAILABLE` through it on every target; `tests/rust.test.tsx` checks that code survives the crossing. TypeScript's `RecordingSession.orientation()` is synchronous and the crate's answer is not, so `rustBackend()` returns the last orientation the crate reported and refreshes it in the background: it can lag one call behind a turn.
 
-Deferred because camera's surface crosses device handles and frame bytes, and the plain-value rule does not cover those yet. Designing that crossing needs `nsh-core`'s API in hand, not guessed at. Until then the package runs on the memory backend and nothing native is wired.
+Unverified until CI runs it: this code and its tests (`native.rs` unit tests, `tests/rust.test.tsx`, the two `asCameraError` tests in `errors.test.tsx`) postdate CI run 44381693528.
 
 ## Rust calls are synchronous; TypeScript wraps them in Promises
 

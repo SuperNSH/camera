@@ -54,7 +54,23 @@ export function cameraError(code: CameraErrorCode): CameraError {
   return new CameraError(code);
 }
 
-/** Turns whatever a backend threw into a coded `CameraError`. Anything unknown is a backend failure. */
+const KNOWN = new Set<string>(Object.keys(MESSAGES));
+
+/**
+ * Turns whatever a backend or the native side threw into a coded `CameraError`. A rejection from
+ * the Rust crate carries its `code`; a host's carries `ERR_NSH_HOST_ERROR` and starts its message
+ * with the code, as `ERR_CAMERA_DEVICE_BUSY: text`. Anything unknown is a backend failure.
+ */
 export function asCameraError(error: unknown): CameraError {
-  return error instanceof CameraError ? error : cameraError("ERR_CAMERA_BACKEND");
+  if (error instanceof CameraError) return error;
+  const raw = (error ?? {}) as { code?: unknown; message?: unknown };
+  const code = typeof raw.code === "string" ? raw.code : "";
+  const message = typeof raw.message === "string" ? raw.message : "";
+  if (code === "ERR_NSH_HOST_ERROR") {
+    const named = /^(ERR_CAMERA_[A-Z_]+): /.exec(message)?.[1];
+    return named !== undefined && KNOWN.has(named)
+      ? cameraError(named as CameraErrorCode)
+      : cameraError("ERR_CAMERA_BACKEND");
+  }
+  return KNOWN.has(code) ? cameraError(code as CameraErrorCode) : cameraError("ERR_CAMERA_BACKEND");
 }
