@@ -1,0 +1,8 @@
+{
+  "nsh": ">=0.6",
+  "exports": {
+    "nsh-camera": "tsx/index.ts",
+    "nsh-camera/rust": "tsx/rust.ts",
+    "nsh-camera/memory": "tsx/memory.ts"
+  }
+}

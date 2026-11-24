@@ -4,6 +4,18 @@ Photo capture, video recording and live preview for Native Shell apps.
 
 Part of the Native Shell (NSH) capability set. Docs in `docs/`, CI on GitHub Actions, and a web status page on GitHub Pages at https://supernsh.github.io/camera/.
 
+## Install
+
+In the app's directory:
+
+```sh
+nsh add nsh-camera
+```
+
+`nsh add` needs NSH main or the nightly: the 0.6.0 and 0.6.1 releases do not have it. In a Rust app, `cargo add nsh-camera` works with any of them.
+
+TSX imports `nsh-camera`, with `nsh-camera/rust` and `nsh-camera/memory` alongside it.
+
 ## Status
 
 **API written, verified by CI on the fake and memory backends.** The repo is a Rust crate (`crates/nsh-camera`) and a TypeScript package (`packages/nsh-camera`) with the same API and behavior. The layout mirrors SuperNSH/biometrics. No native camera backend is wired yet: every unwired link, `Camera::new()` and a TypeScript `Camera` with no backend included, resolves `ERR_CAMERA_NOT_AVAILABLE`, `permission()` too. Verified by [CI run 44381693528](https://github.com/SuperNSH/camera/actions/runs/44381693528): the `format`, `rust` and `typescript` jobs all passed. TSX reaches the crate through `nsh-camera/native` (`rustBackend()`), which answers `ERR_CAMERA_NOT_AVAILABLE` until a link is wired; that binding postdates the CI run and is unverified until CI runs it. Nothing runs against a real camera, so the native backends, real permission prompts and real interruptions are unverified. Read [docs/brief.md](docs/brief.md) for the planned approach and [docs/parity.md](docs/parity.md) for what is done.
