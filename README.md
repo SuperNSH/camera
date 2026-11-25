@@ -12,7 +12,7 @@ In the app's directory:
 nsh add nsh-camera
 ```
 
-`nsh add` needs NSH main or the nightly: the 0.6.0 and 0.6.1 releases do not have it. In a Rust app, `cargo add nsh-camera` works with any of them.
+`nsh add` needs NSH 0.7.0 or later: the 0.6.x releases do not have it. In a Rust app, `cargo add nsh-camera` works with any of them.
 
 TSX imports `nsh-camera`, with `nsh-camera/rust` and `nsh-camera/memory` alongside it.
 
@@ -39,7 +39,7 @@ GitHub Actions compiles and tests everything. `ci.yml` runs on every push to `ma
 
 - **format**: `cargo fmt --all -- --check`.
 - **rust**: `cargo clippy -p nsh-camera --all-targets -- -D warnings`, then `cargo test -p nsh-camera --no-fail-fast`.
-- **typescript**, with NSH v0.6.0: `nsh check`, then `nsh build` (a warning fails the job), then `nsh test`.
+- **typescript**, with NSH v0.7.1: `nsh check`, then `nsh build` (a warning fails the job), then `nsh test`.
 
 Nothing is built or tested on a developer's machine.
 

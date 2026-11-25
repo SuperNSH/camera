@@ -14,4 +14,4 @@ name = "nsh_camera"
 path = "src/lib.rs"
 
 [dependencies]
-nsh-core = "0.6.0"
+nsh-core = "0.7.0"
